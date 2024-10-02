@@ -1,0 +1,164 @@
+version: '3.8'
+services:
+  service-registry:
+    image: service-registry
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+
+  api-gateway:
+    image: apigateway-0.0.1-snapshot
+    container_name: api-gateway
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+    depends_on:
+      - service-registry
+    networks:
+      - app-network
+    ports:
+      - "8765:8765"
+
+  user-service:
+    image: user-service
+    container_name: user-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db-userservice:5432/userservice
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Test123$
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+    depends_on:
+      - service-registry
+      - postgres-db-userservice
+    networks:
+      - app-network
+    ports:
+      - "8083:8083"
+
+  authentication-service:
+    image: authentication-service
+    container_name: authentication-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db-authservice:5432/authenticationservice
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Test123$
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+    depends_on:
+      - service-registry
+      - postgres-db-authservice
+    networks:
+      - app-network
+    ports:
+      - "8082:8082"
+
+  illness-record-service:
+    image: illness-record-service
+    container_name: illness-record-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db-recordservice:5432/illnessrecordservice
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Test123$
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+    depends_on:
+      - service-registry
+      - postgres-db-recordservice
+    networks:
+      - app-network
+    ports:
+      - "8084:8084"
+
+  event-service:
+    image: event-service
+    container_name: event-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db-eventservice:5432/eventservice
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Test123$
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+    depends_on:
+      - service-registry
+      - postgres-db-eventservice
+    networks:
+      - app-network
+    ports:
+      - "8085:8085"
+
+  search-service:
+    image: search-service
+    container_name: search-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+    depends_on:
+      - service-registry
+    networks:
+      - app-network
+    ports:
+      - "8087:8087"
+
+  postgres-db-userservice:
+    image: postgres:14
+    container_name: postgres-db-userservice
+    environment:
+      - POSTGRES_DB=userservice
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Test123$
+    ports:
+      - "5433:5432"  # Adjusted port for user service DB
+    networks:
+      - app-network
+
+  postgres-db-authservice:
+    image: postgres:14
+    container_name: postgres-db-authservice
+    environment:
+      - POSTGRES_DB=authenticationservice
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Test123$
+    ports:
+      - "5434:5432"  # Adjusted port for authentication service DB
+    networks:
+      - app-network
+
+  postgres-db-recordservice:
+    image: postgres:14
+    container_name: postgres-db-recordservice
+    environment:
+      - POSTGRES_DB=illnessrecordservice
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Test123$
+    ports:
+      - "5435:5432"  # Adjusted port for authentication service DB
+    networks:
+      - app-network
+
+  postgres-db-eventservice:
+    image: postgres:14
+    container_name: postgres-db-eventservice
+    environment:
+      - POSTGRES_DB=eventservice
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Test123$
+    ports:
+      - "5436:5432"  # Adjusted port for authentication service DB
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
