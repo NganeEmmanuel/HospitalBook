@@ -11,7 +11,7 @@ This project leverages modern web technologies to deliver a secure, scalable, an
 ## Features
 
 - **User-friendly interface** to manage health records and monitor medical history.
-- **Authentication** using Clerk for user management and session control.
+- **Authentication** using using Json web token for a secure and faster authentication process
 - **Event-based health tracking**, enabling users to add and view medical events such as doctor visits, treatments, and tests.
 - **Microservices architecture**, ensuring scalability, reliability, and separation of concerns.
 - **Stateless services** for authentication and searching through records.
